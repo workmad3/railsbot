@@ -20,7 +20,7 @@ class Bot < Summer::Connection
     privmsg("identify #{config['nickserv_password']}", "nickserv")
   end
 
-  def authorize_command(sender, reply_to, msg)
+  def authorize_command(sender, reply_to, msg, options={})
     return unless authorized?(sender[:nick]) && sender[:nick].downcase == "radar"
     p = person(msg)
     p.authorized = true
@@ -28,7 +28,7 @@ class Bot < Summer::Connection
     privmsg("#{msg} is now authorized to (ab)use me.", sender[:nick])
   end
 
-  def gitlog_command(sender, reply_to, msg)
+  def gitlog_command(sender, reply_to, msg, options={})
     return unless authorized?(sender[:nick])
     privmsg(`git log -1`.split("\n").first, reply_to)
   end
@@ -54,7 +54,7 @@ class Bot < Summer::Connection
     end
   end
 
-  def seen_command(sender, reply_to, nick)
+  def seen_command(sender, reply_to, nick, options={})
     return unless authorized?(sender[:nick])
     if sender[:nick].downcase == nick.downcase
       privmsg("Looked in a mirror recently? Oh? Poor mirror.", reply_to)
@@ -75,7 +75,7 @@ class Bot < Summer::Connection
     end
   end
 
-  def since_command(sender, reply_to, nick)
+  def since_command(sender, reply_to, nick, options={})
     return unless authorized?(sender[:nick])
     p = Person.find_by_nick(nick)
     if p
@@ -98,7 +98,7 @@ class Bot < Summer::Connection
   end
 
 
-  def whois_command(sender, reply_to, nick)
+  def whois_command(sender, reply_to, nick, options={})
     return unless authorized?(sender[:nick])
     p = Person.where(:nick => nick).first
     if p
@@ -119,11 +119,11 @@ class Bot < Summer::Connection
     search("http://www.rubygems.org/search", sender, msg, reply_to, opts, 'search')
   end
 
-  def join_command(sender, reply_to, msg)
+  def join_command(sender, reply_to, msg, options={})
     join(msg) if authorized?(sender[:nick])
   end
 
-  def say_command(sender, reply_to, msg)
+  def say_command(sender, reply_to, msg, options={})
     return unless authorized?(sender[:nick])
     chan, msg = msg.split(" ", 2)
     begin
@@ -135,7 +135,7 @@ class Bot < Summer::Connection
     end
   end
 
-  def part_command(sender, reply_to, msg)
+  def part_command(sender, reply_to, msg, options={})
     part(msg) if authorized?(sender[:nick])
   end
 
